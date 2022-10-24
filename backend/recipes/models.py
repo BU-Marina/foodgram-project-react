@@ -80,8 +80,8 @@ class Tag(models.Model):
         unique=True,
         verbose_name=...
     )
-    hexcode = models.CharField(
-        max_length=...,
+    color = models.CharField(
+        max_length=6,
         verbose_name='Цвет'
     )
 
@@ -102,4 +102,23 @@ class RecipesTags(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'tag'], name='unique_recipe_tag')
+        ]
+
+
+class UsersFavourites(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favourites'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='followers'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'], name='unique_favourite')
         ]
