@@ -130,3 +130,12 @@ dmypy.json
 
 # .idea
 .idea
+
+# App migrations
+migrations/
+
+# Debug media
+media/
+
+# *
+developments.py
