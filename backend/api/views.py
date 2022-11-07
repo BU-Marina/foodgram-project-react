@@ -1,43 +1,42 @@
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet
-from django.http import HttpResponse
-from rest_framework import filters, status, viewsets, mixins
-from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError, NotFound
-from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated #AdminOrReadOnly,
-from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
-
+from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 
-from recipes.models import Recipe, Tag, Ingredient, Favorite, ShoppingCart, RecipeIngredient
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
 from users.models import Follow
 
-from .filters import RecipeFilter, IngredientFilter
-from .permissions import IsAuthorOrReadOnly, IsAuthor
+from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPagination
-from .serializers import (RecipeSerializer, TagSerializer, IngredientSerializer, UserSerializer,
-                           RecipeListSerializer, FavoriteSerializer, SubscribeSerializer,
-                           SubscriptionsSerializer, UserListSerializer, ShoppingCartSerializer)
+from .permissions import IsAuthorOrReadOnly
+from .serializers import (FavoriteSerializer, IngredientSerializer,
+                          RecipeSerializer, ShoppingCartSerializer,
+                          SubscribeSerializer, SubscriptionsSerializer,
+                          TagSerializer)
 
 User = get_user_model()
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [
         IsAuthorOrReadOnly,
-        #IsAuthenticatedOrReadOnly,
     ]
     pagination_class = LimitPagination
     filter_backends = [
         filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend
     ]
     filterset_class = RecipeFilter
-    # search_fields = ('^name',)
-    # ordering_fields = ('name', 'birth_year')
-    ordering = ('-pub_date',) 
+    ordering = ('-pub_date',)
 
     def get_permissions(self):
         if self.action == 'download_shopping_cart':
@@ -100,7 +99,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, *args, **kwargs):
         return self.user_recipe_relation(
             request, kwargs, model=ShoppingCart,
-            error_message='Этот рецепт уже не находится в вашем списке покупок.'
+            error_message=(
+                'Этот рецепт уже не находится в вашем'
+                'списке покупок.'
+            )
         )
 
     @action(methods=['post', 'delete'], detail=True)
@@ -171,10 +173,6 @@ class CustomUserViewSet(UserViewSet):
         AllowAny,
     ]
     pagination_class = LimitPagination
-    # filter_backends = [
-    #     DjangoFilterBackend,
-    # ]
-    # filterset_class = SubscriptionsFilter
 
     def get_permissions(self):
         if self.action in [
@@ -184,19 +182,11 @@ class CustomUserViewSet(UserViewSet):
         return super().get_permissions()
 
     def get_serializer_class(self):
-        # if self.action in ['list', 'create']:
-        #     return UserListSerializer
-        # elif self.action in ['retrieve', 'me']:
-        #     return UserSerializer
         if self.action == 'subscribe':
             return SubscribeSerializer
         elif self.action == 'subscriptions':
             return SubscriptionsSerializer
         return super().get_serializer_class()
-
-    # def get_filterset_class(self):
-    #     if self.action in ['subscriptions', 'subscribe']:
-    #         return SubscriptionsFilter
 
     def get_queryset(self):
         if self.action == 'subscribe':

@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='not-a-secret')
 
-DEBUG = True # os.getenv('DEBUG', default=False)
+DEBUG = os.getenv('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['localhost']
 
@@ -60,26 +61,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
-    #     'NAME': os.getenv('DB_NAME', default=''),
-    #     'USER': os.getenv('POSTGRES_USER', default=''),
-    #     'PASSWORD': os.getenv('POSTGRES_PASSWORD', default=''),
-    #     'HOST': os.getenv('DB_HOST', default=''),
-    #     'PORT': os.getenv('DB_PORT', default='')
-    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', default='postgres'),
+        'USER': os.getenv('POSTGRES_USER', default=''),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default=''),
+        'HOST': os.getenv('DB_HOST', default=''),
+        'PORT': os.getenv('DB_PORT', default='')
     }
 }
 
-AUTH_USER_MODEL = "users.User" 
+AUTH_USER_MODEL = "users.User"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -100,7 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly', 
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -117,10 +110,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://nginx:3000',
     'http://frontend:3000',
 ]
+
 CORS_URLS_REGEX = r'^/api/.*$'
 
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
 
 LANGUAGE_CODE = 'ru-ru'
 
@@ -132,9 +124,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -156,6 +145,6 @@ DJOSER = {
         'user': 'api.serializers.UserSerializer',
         'user_list': 'api.serializers.UserListSerializer',
         'user_create': 'api.serializers.UserListSerializer',
-        'current_user': 'api.serializers.UserSerializer', 
+        'current_user': 'api.serializers.UserSerializer',
     },
 }

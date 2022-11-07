@@ -1,9 +1,10 @@
-import os, csv, json
+import json
+import os
 
 from django.core.management import BaseCommand
+
 from foodgram.settings import BASE_DIR
 from recipes.models import Ingredient
-
 
 ALREDY_LOADED_ERROR_MESSAGE = """
 If you need to reload the child data from the CSV file,
@@ -36,9 +37,3 @@ class Command(BaseCommand):
                 ]
             )
             print(f'Ингредиенты из файла {self.file_name} загружены.')
-            # for row in json.load(data):
-            #     # print(row)
-            #     ingredient = Ingredient.objects.create(
-            #         **row
-            #     )
-            #     print(f'Ингредиент {ingredient} загружен.')

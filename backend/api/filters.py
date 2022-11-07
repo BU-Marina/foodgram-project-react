@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
+from django_filters.rest_framework import FilterSet, filters
 from rest_framework.exceptions import NotAuthenticated
-from django_filters.rest_framework import filters, FilterSet
 
-from recipes.models import Recipe, Tag, Ingredient
+from recipes.models import Ingredient, Recipe, Tag
 
 User = get_user_model()
 
@@ -30,7 +30,7 @@ class RecipeFilter(FilterSet):
                 'Войдите или зарегистрируйтесь, чтобы просматривать избранное.'
             )
         if value:
-           return queryset.filter(favorited__user=user)
+            return queryset.filter(favorited__user=user)
         return queryset
 
     def filter_shopping_cart(self, queryset, field_name, value):
@@ -41,7 +41,7 @@ class RecipeFilter(FilterSet):
                 'свой список покупок.'
             )
         if value:
-           return queryset.filter(shoppingcart__user=user)
+            return queryset.filter(shoppingcart__user=user)
         return queryset
 
 

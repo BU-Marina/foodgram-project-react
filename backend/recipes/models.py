@@ -1,7 +1,8 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
+
 
 class Ingredient(models.Model):
     name = models.CharField(
@@ -9,7 +10,7 @@ class Ingredient(models.Model):
         verbose_name='Ингредиент',
         help_text='Введите название'
     )
-    measurement_unit = models.CharField(              # Должно выбираться из списка (без возможности добавить новую е.и.*) choices
+    measurement_unit = models.CharField(
         max_length=50,
         verbose_name='Единица измерения',
         help_text='Выберите единицу измерения',
@@ -48,11 +49,11 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Автор'
     )
-    ingredients = models.ManyToManyField( # Должно выбираться из списка (с возможностью добавить новый)
+    ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredient'
     )
-    tags = models.ManyToManyField( # Должно выбираться из списка
+    tags = models.ManyToManyField(
         Tag,
         through='RecipeTag'
     )
@@ -101,15 +102,17 @@ class RecipeIngredient(models.Model):
         help_text='Укажите количество'
     )
 
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['recipe', 'ingredient'], name='unique_recipe_ingredient')
+                fields=['recipe', 'ingredient'],
+                name='unique_recipe_ingredient'
+            )
         ]
 
     def __str__(self) -> str:
-        return f'Ингредиент {self.ingredient} используется в рецепте {self.recipe}'
+        return (f'Ингредиент {self.ingredient}'
+                f'используется в рецепте {self.recipe}')
 
 
 class RecipeTag(models.Model):
