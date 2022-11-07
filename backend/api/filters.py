@@ -1,22 +1,29 @@
+from django.contrib.auth import get_user_model
 from rest_framework.exceptions import NotAuthenticated
 from django_filters.rest_framework import filters, FilterSet
 
-from recipes.models import Recipe
-from users.models import User
+from recipes.models import Recipe, Tag, Ingredient
+
+User = get_user_model()
+
 
 class RecipeFilter(FilterSet):
-    is_favorited = filters.BooleanFilter(method='filter_is_favorited')
+    is_favorited = filters.BooleanFilter(method='filter_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
-        method='filter_is_in_shopping_cart'
+        method='filter_shopping_cart'
     )
-    tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
+    tags = filters.ModelMultipleChoiceFilter(
+        field_name='tags__slug',
+        to_field_name="slug",
+        queryset=Tag.objects.all()
+    )
     author = filters.ModelChoiceFilter(queryset=User.objects.all())
 
     class Meta:
         model = Recipe
-        fields = ['author__id', 'tags']
+        fields = ['author', 'tags']
 
-    def filter_is_favorited(self, queryset, field_name, value):
+    def filter_favorited(self, queryset, field_name, value):
         user = self.request.user
         if user.is_anonymous:
             raise NotAuthenticated(
@@ -26,7 +33,7 @@ class RecipeFilter(FilterSet):
            return queryset.filter(favorited__user=user)
         return queryset
 
-    def filter_is_in_shopping_cart(self, queryset, field_name, value):
+    def filter_shopping_cart(self, queryset, field_name, value):
         user = self.request.user
         if user.is_anonymous:
             raise NotAuthenticated(
@@ -38,19 +45,9 @@ class RecipeFilter(FilterSet):
         return queryset
 
 
-class SubscriptionsFilter(FilterSet):
-    recipes_limit = filters.NumberFilter(
-        field_name='recipes_limit', 
-        method='paginate_recipes',
-    )
-
-    def paginate_recipes(self, queryset, field_name, value):
-        if self.request.user.is_authenticated and value:
-            queryset = queryset.filter(
-                following__user=self.request.user
-            ).values('recipes')[:value]
-        return queryset
+class IngredientFilter(FilterSet):
+    name = filters.CharFilter(field_name='name', lookup_expr='istartswith')
 
     class Meta:
-        model = Recipe
-        fields = ['recipes_limit',] 
+        model = Ingredient
+        fields = ('name',)

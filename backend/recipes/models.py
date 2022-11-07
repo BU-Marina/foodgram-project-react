@@ -74,6 +74,13 @@ class Recipe(models.Model):
         verbose_name='Время приготовления',
         help_text='Укажите время необходимое для приготовления (в минутах)'
     )
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ['-pub_date']
 
     def __str__(self) -> str:
         return self.name

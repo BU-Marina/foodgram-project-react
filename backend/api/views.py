@@ -14,7 +14,7 @@ from djoser.views import UserViewSet
 from recipes.models import Recipe, Tag, Ingredient, Favorite, ShoppingCart, RecipeIngredient
 from users.models import Follow
 
-from .filters import RecipeFilter, SubscriptionsFilter
+from .filters import RecipeFilter, IngredientFilter
 from .permissions import IsAuthorOrReadOnly, IsAuthor
 from .pagination import LimitPagination
 from .serializers import (RecipeSerializer, TagSerializer, IngredientSerializer, UserSerializer,
@@ -35,9 +35,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend
     ]
     filterset_class = RecipeFilter
-    search_fields = ('^name',)
+    # search_fields = ('^name',)
     # ordering_fields = ('name', 'birth_year')
-    ordering = ('name',) 
+    ordering = ('-pub_date',) 
 
     def get_permissions(self):
         if self.action == 'download_shopping_cart':
@@ -45,9 +45,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            return RecipeListSerializer
-        elif self.action == 'shopping_cart':
+        if self.action == 'shopping_cart':
             return ShoppingCartSerializer
         elif self.action == 'favorite':
             return FavoriteSerializer
@@ -164,8 +162,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [
         AllowAny,
     ]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ('^name',)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IngredientFilter
 
 
 class CustomUserViewSet(UserViewSet):
@@ -173,6 +171,10 @@ class CustomUserViewSet(UserViewSet):
         AllowAny,
     ]
     pagination_class = LimitPagination
+    # filter_backends = [
+    #     DjangoFilterBackend,
+    # ]
+    # filterset_class = SubscriptionsFilter
 
     def get_permissions(self):
         if self.action in [
@@ -192,6 +194,10 @@ class CustomUserViewSet(UserViewSet):
             return SubscriptionsSerializer
         return super().get_serializer_class()
 
+    # def get_filterset_class(self):
+    #     if self.action in ['subscriptions', 'subscribe']:
+    #         return SubscriptionsFilter
+
     def get_queryset(self):
         if self.action == 'subscribe':
             return Follow.objects.all()
@@ -207,7 +213,6 @@ class CustomUserViewSet(UserViewSet):
         serializer = self.get_serializer(
             page, context=serializer_context, many=True
         )
-        # SubscriptionsFilter.filter_queryset()
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['post', 'delete'], detail=True)
