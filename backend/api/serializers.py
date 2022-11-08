@@ -3,6 +3,7 @@ import base64
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -219,7 +220,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
         ).data
 
 
-class UserListSerializer(serializers.ModelSerializer):
+class UserListSerializer(UserCreateSerializer):
 
     class Meta:
         model = User
@@ -227,20 +228,6 @@ class UserListSerializer(serializers.ModelSerializer):
             'id', 'username', 'password', 'email', 'first_name', 'last_name'
         )
         read_only_fields = ('id',)
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
-
-    def create(self, validated_data):
-        user = User(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
 
 
 class SubscriptionsSerializer(UserSerializer):
