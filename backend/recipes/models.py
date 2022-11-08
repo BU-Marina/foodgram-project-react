@@ -6,7 +6,7 @@ User = get_user_model()
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=50,
+        max_length=200,
         verbose_name='Ингредиент',
         help_text='Введите название'
     )

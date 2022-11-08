@@ -10,7 +10,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='not-a-secret')
 
 DEBUG = os.getenv('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -107,8 +107,6 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'http://nginx:3000',
-    'http://frontend:3000',
 ]
 
 CORS_URLS_REGEX = r'^/api/.*$'
