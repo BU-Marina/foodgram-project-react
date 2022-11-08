@@ -161,15 +161,12 @@ class RecipeSerializer(serializers.ModelSerializer):
             lst = []
             for data in ingredients_data:
                 amount = int(data.pop('amount'))
-                ingredient = data['ingredient']
-                current_ingredient, status = Ingredient.objects.get_or_create(
-                    **ingredient
-                )
+                ingredient = data['id']
                 RecipeIngredient.objects.create(
-                    recipe=instance, ingredient=current_ingredient,
+                    recipe=instance, ingredient=ingredient,
                     amount=amount
                 )
-                lst.append(current_ingredient)
+                lst.append(ingredient)
             instance.ingredients.set(lst)
 
         if 'tags' in validated_data:

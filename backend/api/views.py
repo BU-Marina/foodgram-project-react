@@ -64,9 +64,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def partial_update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
-
     def user_recipe_relation(self, request, data, **kwargs):
         user = self.request.user
         model = kwargs.get('model')
@@ -118,7 +115,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipes = recipes_ingredients.values(
             'recipe__name',
             'recipe__author__username'
-        )
+        ).distinct()
         ingredients = recipes_ingredients.values(
             'ingredient__name',
             'ingredient__measurement_unit'
