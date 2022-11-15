@@ -11,6 +11,8 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             RecipeTag, ShoppingCart, Tag)
 from users.models import Follow
 
+RECIPES_LIMIT_DEFAULT = '6'
+
 User = get_user_model()
 
 
@@ -243,11 +245,11 @@ class SubscriptionsSerializer(UserSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        recipes = Recipe.objects.filter(author=obj)
-        recipes_limit = request.query_params.get('recipes_limit')
+        recipes_limit = request.query_params.get(
+            'recipes_limit', RECIPES_LIMIT_DEFAULT
+        )
 
-        if recipes_limit:
-            recipes = recipes[:int(recipes_limit)]
+        recipes = Recipe.objects.filter(author=obj)[:int(recipes_limit)]
 
         serializer = RecipeListSerializer(
             recipes, many=True, context={'request': request}
