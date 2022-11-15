@@ -138,5 +138,5 @@ migrations/
 static/
 media/
 
-# *
+# vscode settings
 .vscode/
