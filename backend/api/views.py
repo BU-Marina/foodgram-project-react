@@ -9,10 +9,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
+from users.models import Follow
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
-from users.models import Follow
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPagination
@@ -46,14 +45,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'shopping_cart':
             return ShoppingCartSerializer
-        elif self.action == 'favorite':
+        if self.action == 'favorite':
             return FavoriteSerializer
         return RecipeSerializer
 
     def get_queryset(self):
         if self.action == 'shopping_cart':
             return ShoppingCart.objects.all()
-        elif self.action == 'download_shopping_cart':
+        if self.action == 'download_shopping_cart':
             return RecipeIngredient.objects.filter(
                 recipe__shoppingcart__user=self.request.user
             )
@@ -80,7 +79,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             try:
                 relation = model.objects.get(
                     user=user,
@@ -181,14 +180,14 @@ class CustomUserViewSet(UserViewSet):
     def get_serializer_class(self):
         if self.action == 'subscribe':
             return SubscribeSerializer
-        elif self.action == 'subscriptions':
+        if self.action == 'subscriptions':
             return SubscriptionsSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):
         if self.action == 'subscribe':
             return Follow.objects.all()
-        elif self.action == 'subscriptions':
+        if self.action == 'subscriptions':
             return User.objects.filter(following__user=self.request.user)
         return User.objects.all()
 
@@ -217,7 +216,7 @@ class CustomUserViewSet(UserViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             try:
                 subscription = Follow.objects.get(
                     user=user,
