@@ -3,12 +3,21 @@ import base64
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
-from djoser.serializers import UserCreateSerializer
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
+from djoser.serializers import UserCreateSerializer
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    RecipeTag,
+    ShoppingCart,
+    Tag
+)
 from users.models import Follow
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            RecipeTag, ShoppingCart, Tag)
 
 RECIPES_LIMIT_DEFAULT = '6'
 

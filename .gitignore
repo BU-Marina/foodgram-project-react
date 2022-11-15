@@ -134,8 +134,9 @@ dmypy.json
 # App migrations
 migrations/
 
-# Debug media
+# static and media files
+static/
 media/
 
 # *
-developments.py
+.vscode/
