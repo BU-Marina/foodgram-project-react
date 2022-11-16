@@ -13,7 +13,6 @@ from recipes.models import (
     Ingredient,
     Recipe,
     RecipeIngredient,
-    RecipeTag,
     ShoppingCart,
     Tag
 )
@@ -150,9 +149,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         for tag_id in tags:
             current_tag = get_object_or_404(Tag, pk=tag_id)
-            RecipeTag.objects.create(
-                recipe=recipe, tag=current_tag
-            )
+            recipe.tags.add(current_tag)
 
         return recipe
 

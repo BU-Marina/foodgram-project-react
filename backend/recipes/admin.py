@@ -5,7 +5,6 @@ from .models import (
     Ingredient,
     Recipe,
     RecipeIngredient,
-    RecipeTag,
     ShoppingCart,
     Tag
 )
@@ -29,6 +28,5 @@ admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(RecipeIngredient)
 admin.site.register(Tag)
-admin.site.register(RecipeTag)
 admin.site.register(Favorite)
 admin.site.register(ShoppingCart)

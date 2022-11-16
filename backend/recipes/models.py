@@ -53,10 +53,7 @@ class Recipe(models.Model):
         Ingredient,
         through='RecipeIngredient'
     )
-    tags = models.ManyToManyField(
-        Tag,
-        through='RecipeTag'
-    )
+    tags = models.ManyToManyField(Tag)
     name = models.CharField(
         max_length=200,
         verbose_name='Название',
@@ -114,16 +111,6 @@ class RecipeIngredient(models.Model):
         return (f'Ингредиент {self.ingredient}'
                 f'используется в рецепте {self.recipe}')
 
-
-class RecipeTag(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE
-    )
-    tag = models.ForeignKey(
-        Tag,
-        on_delete=models.CASCADE
-    )
 
     class Meta:
         constraints = [
