@@ -112,16 +112,6 @@ class RecipeIngredient(models.Model):
                 f'используется в рецепте {self.recipe}')
 
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'tag'], name='unique_recipe_tag')
-        ]
-
-    def __str__(self) -> str:
-        return f'У рецепта {self.recipe} есть тег {self.tag}'
-
-
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,
