@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from rest_framework.validators import UniqueTogetherValidator
 from drf_extra_fields.fields import Base64ImageField
 
@@ -121,58 +120,59 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
 
-    def create(self, validated_data):
-        ingredients = validated_data.pop('recipe_ingredients')
-        tags = validated_data.pop('tags')
+    def validate(self, data):
+        if not data['recipe_ingredients']:
+            raise serializers.ValidationError("Список ингредиентов пустой.")
 
-        recipe = Recipe.objects.create(**validated_data)
+        if not data['tags']:
+            raise serializers.ValidationError("Список тегов пустой.")
 
+        if len(data['tags']) != len(set(data['tags'])):
+            raise serializers.ValidationError("Теги повторяются.")
+
+        ingredints_id = [
+            ingredient['id'] for ingredient in data['recipe_ingredients']
+        ]
+        if len(ingredints_id) != len(set(ingredints_id)):
+            raise serializers.ValidationError("Ингредиенты повторяются.")
+
+        return data
+
+    def set_ingredients(self, recipe, ingredients):
         objs = [RecipeIngredient(
             recipe=recipe,
             ingredient=data['id'],
             amount=int(data['amount'])
         ) for data in ingredients]
 
-        RecipeIngredient.objects.bulk_create(objs)
+        recipe_ingredients = RecipeIngredient.objects.bulk_create(objs)
 
+        return recipe_ingredients
+
+    def create(self, validated_data):
+        ingredients_data = validated_data.pop('recipe_ingredients')
+        tags = validated_data.pop('tags')
+
+        recipe = Recipe.objects.create(**validated_data)
+
+        self.set_ingredients(recipe, ingredients_data)
         recipe.tags.set(tags)
 
         return recipe
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time
-        )
-        instance.image = validated_data.get('image', instance.image)
-
         if 'recipe_ingredients' in validated_data:
             RecipeIngredient.objects.filter(
                 recipe=instance
             ).delete()
             ingredients_data = validated_data.pop('recipe_ingredients')
-            lst = []
-            for data in ingredients_data:
-                amount = int(data.pop('amount'))
-                ingredient = data['id']
-                RecipeIngredient.objects.create(
-                    recipe=instance, ingredient=ingredient,
-                    amount=amount
-                )
-                lst.append(ingredient)
-            instance.ingredients.set(lst)
+            self.set_ingredients(instance, ingredients_data)
 
         if 'tags' in validated_data:
-            tags_ids = validated_data.pop('tags')
-            lst = []
-            for tag_id in tags_ids:
-                current_tag = get_object_or_404(Tag, pk=tag_id)
-                lst.append(current_tag)
-            instance.tags.set(lst)
+            tags = validated_data.pop('tags')
+            instance.tags.set(tags)
 
-        instance.save()
-        return instance
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         return RecipeRepresentationSerializer(

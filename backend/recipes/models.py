@@ -114,7 +114,7 @@ class RecipeIngredient(models.Model):
         ]
 
     def __str__(self) -> str:
-        return (f'Ингредиент {self.ingredient}'
+        return (f'Ингредиент {self.ingredient} '
                 f'используется в рецепте {self.recipe}')
 
 
