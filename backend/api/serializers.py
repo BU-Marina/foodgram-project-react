@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 
-from rest_framework import serializers, exceptions
+from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from drf_extra_fields.fields import Base64ImageField
 
 from djoser.serializers import UserCreateSerializer
+from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (
     Favorite,
     Ingredient,
