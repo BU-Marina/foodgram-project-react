@@ -162,9 +162,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [
-        AllowAny,
-    ]
+    permission_classes = [AllowAny]
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

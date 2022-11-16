@@ -2,6 +2,9 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
+MIN_COOKING_TIME = 5
+MIN_INGREDIENTS_AMOUNT = 0.1
+
 User = get_user_model()
 
 
@@ -75,7 +78,7 @@ class Recipe(models.Model):
             'Укажите время необходимое для приготовления '
             '(минимальное - 5 минут)'
         ),
-        validators=[MinValueValidator(5)]
+        validators=[MinValueValidator(MIN_COOKING_TIME)]
     )
     pub_date = models.DateTimeField(
         'Дата публикации',
@@ -102,7 +105,7 @@ class RecipeIngredient(models.Model):
     amount = models.PositiveIntegerField(
         verbose_name='Количество',
         help_text='Укажите количество',
-        validators=[MinValueValidator(0.1)]
+        validators=[MinValueValidator(MIN_INGREDIENTS_AMOUNT)]
     )
 
     class Meta:
