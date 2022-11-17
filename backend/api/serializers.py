@@ -57,8 +57,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
-        read_only=False, queryset=Ingredient.objects.all()
+        read_only=False,
+        queryset=Ingredient.objects.all(),
+        source='ingredient.id'
     )
+    # id = serializers.IntegerField(
+    #     read_only=False, source='ingredient.id'
+    # )
     name = serializers.CharField(
         read_only=True, source='ingredient.name'
     )
@@ -131,10 +136,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         if len(data['tags']) != len(set(data['tags'])):
             raise serializers.ValidationError("Теги повторяются.")
 
-        ingredints_id = [
-            ingredient['id'] for ingredient in data['recipe_ingredients']
+        ingredints = [
+            data['ingredient']['id'] for data in data['recipe_ingredients']
         ]
-        if len(ingredints_id) != len(set(ingredints_id)):
+        if len(ingredints) != len(set(ingredints)):
             raise serializers.ValidationError("Ингредиенты повторяются.")
 
         return data
@@ -142,7 +147,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def set_ingredients(self, recipe, ingredients):
         objs = [RecipeIngredient(
             recipe=recipe,
-            ingredient=data['id'],
+            ingredient=data['ingredient']['id'],
             amount=int(data['amount'])
         ) for data in ingredients]
 
