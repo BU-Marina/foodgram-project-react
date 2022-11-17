@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from djoser.serializers import UserCreateSerializer
 from drf_extra_fields.fields import Base64ImageField
+
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -145,9 +146,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             amount=int(data['amount'])
         ) for data in ingredients]
 
-        recipe_ingredients = RecipeIngredient.objects.bulk_create(objs)
-
-        return recipe_ingredients
+        return RecipeIngredient.objects.bulk_create(objs)
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('recipe_ingredients')

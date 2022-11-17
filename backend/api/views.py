@@ -69,7 +69,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeIngredient.objects.filter(
                 recipe__shoppingcart__user=self.request.user
             )
-        elif self.action == 'favorite':
+        if self.action == 'favorite':
             return Favorite.objects.all()
         return Recipe.objects.all()
 
@@ -103,6 +103,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
             self.perform_destroy(relation)
             return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @action(methods=['post', 'delete'], detail=True)
     def shopping_cart(self, request, *args, **kwargs):
@@ -238,3 +239,4 @@ class CustomUserViewSet(UserViewSet):
 
             self.perform_destroy(subscription)
             return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
