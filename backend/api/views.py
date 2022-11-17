@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from users.models import Follow
+
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -20,6 +20,7 @@ from recipes.models import (
     ShoppingCart,
     Tag
 )
+from users.models import Follow
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPagination
